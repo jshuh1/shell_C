@@ -18,5 +18,3 @@ reap foreground is used when the shell has to wait for foreground process OR use
 They are both implmented as built_in commands. if bg is called, the function takes the first argument, discard % sign, and atoi it to get the job number. If the job number is valid, it sends continuation signal to the process.
 fg works the same, but after sending the signal it forwards input and signal by using tcsetpgrp, waits using reap_foreground, and tcsetpgrps back to current shell upon termination or suspension of the process.
 
-	Testing:
-My shell sometimes prints out weird characters after the output and causes the trace to fail, but it definitely has the right functionality. If traces besides 43,44,45 fails, please run it few more times; it will work. If I lose points to bad buffer amangement, it's fine but my functionality works :) I've been struggling to find out the cause of this, but I have no clue. If you could point out what part of my code could produce this behavior, I'd be really thankful. This problem has been persistent since shell_1..... 
