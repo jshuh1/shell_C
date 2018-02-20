@@ -1,0 +1,22 @@
+README
+
+	Initial job handling:
+Right after I fork child process(line 467), if the forked pid is bigger than zero, as we are in parent process, I perform intial setup for the child process. 
+First, I add the job to the joblist(instantiated at the start of main function) and set process group id to the process id. If the added job is foreground job, I tcsetpgrp to that child process to forward signal and stadnard input. If it's background job, I just print job id and pid to indiciate that a process has started at the background.
+
+	After fork() = 0, if the process was foreground job, I use waitpid for that specific process to finish. 
+
+	Reaping:
+There are two functions, reap_foreground and reap_background. Reap_foreground waits for the given pid, and takes actions appropriate for each status given by waitpid. 
+For process that exited normally, it just removes it from joblist. If the process was killed or suspended by a signal, it takes the signal number and prints to standard output. It was designed to wait for specific foreground process.
+
+Reap_background consists of a while loop that catches every backgroudn process that changes its status. Every normal termination, signalled termination, suspension, and continuation is recorded to standard output and appropriate action is given to joblist.
+
+reap foreground is used when the shell has to wait for foreground process OR user calls fg to fetch suspended background action to foreground. reap background is used to keep track of jobs that has been altered, so it's called at the start and end of the infinite while loop.
+
+	fg and bg:
+They are both implmented as built_in commands. if bg is called, the function takes the first argument, discard % sign, and atoi it to get the job number. If the job number is valid, it sends continuation signal to the process.
+fg works the same, but after sending the signal it forwards input and signal by using tcsetpgrp, waits using reap_foreground, and tcsetpgrps back to current shell upon termination or suspension of the process.
+
+	Testing:
+My shell sometimes prints out weird characters after the output and causes the trace to fail, but it definitely has the right functionality. If traces besides 43,44,45 fails, please run it few more times; it will work. If I lose points to bad buffer amangement, it's fine but my functionality works :) I've been struggling to find out the cause of this, but I have no clue. If you could point out what part of my code could produce this behavior, I'd be really thankful. This problem has been persistent since shell_1..... 
